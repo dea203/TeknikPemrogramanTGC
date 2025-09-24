@@ -1,0 +1,37 @@
+# Data awal
+survey = {
+    "Survey_A": [
+        {"trace_id": 1, "receiver": "R1", "offset": 100, "QC_flag": "OK"},
+        {"trace_id": 2, "receiver": "R2", "offset": 150, "QC_flag": "OK"},
+        {"trace_id": 3, "receiver": "R3", "offset": 200, "QC_flag": "BAD"}
+    ],
+    "Survey_B": [
+        {"trace_id": 4, "receiver": "R1", "offset": 120, "QC_flag": "OK"},
+        {"trace_id": 5, "receiver": "R4", "offset": 250, "QC_flag": "OK"},
+        {"trace_id": 6, "receiver": "R2", "offset": 300, "QC_flag": "BAD"}
+    ]
+}
+
+# 1. Tampilkan semua trace_id dengan QC_flag = BAD
+bad_traces = [trace["trace_id"] for traces in survey.values() for trace in traces if trace["QC_flag"] == "BAD"]
+print("Trace ID dengan QC_flag BAD:", bad_traces)
+
+# 2. Hitung jumlah total trace dari seluruh survey
+total_traces = sum(len(traces) for traces in survey.values())
+print("Jumlah total trace:", total_traces)
+
+# 3. Cari survey dengan jumlah trace paling banyak
+survey_most = max(survey, key=lambda s: len(survey[s]))
+print("Survey dengan jumlah trace paling banyak:", survey_most)
+
+# 4. Buat set berisi semua receiver unik
+unique_receivers = {trace["receiver"] for traces in survey.values() for trace in traces}
+print("Receiver unik:", unique_receivers)
+
+# 5. Buat dictionary baru {"receiver": jumlah_trace}
+receiver_count = {}
+for traces in survey.values():
+    for trace in traces:
+        receiver = trace["receiver"]
+        receiver_count[receiver] = receiver_count.get(receiver, 0) + 1
+print("Frekuensi receiver:", receiver_count)
