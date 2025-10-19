@@ -1,0 +1,106 @@
+# projeck.py
+import os
+import sys
+import pandas as pd
+import matplotlib.pyplot as plt
+
+print("== Debug Info ==")
+print("Python executable:", sys.executable)
+print("Current working dir:", os.getcwd())
+print("Files in working dir:")
+for f in os.listdir('.'):
+    print("  ", f)
+print("=================\n")
+
+# Nama file CSV yang mau dibaca
+csv_name = "data survey gravitasi.csv"
+
+# Kalau file belum ada, buat otomatis
+if not os.path.isfile(csv_name):
+    print(f"⚠️ File '{csv_name}' tidak ditemukan di folder ini.")
+    print("Membuat file contoh otomatis...\n")
+
+    sample_data = """X	Y	Elevasi	Anomali_Gravitasi_mGal
+25	50	105.2	1.2
+45	110	104.8	1.5
+80	30	105.5	1.4
+110	90	104.9	1.8
+60	180	103.2	2.1
+150	150	104.1	2.5
+90	250	102.5	2.8
+180	220	103.3	3.5
+220	50	105.8	2.2
+250	110	105.1	
+210	180	104	4.1
+280	240	102.8	4.5
+310	20	106.1	2.5
+350	80	105.6	3.8
+320	150	104.7	5.2
+380	210	103.5	5.9
+410	55	105.9	4.1
+450	120	105	6.5
+480	190	104.2	7.8
+500	150	104.8	
+520	220	103.8	8.5
+550	100	105.3	7.2
+590	40	106	5.1
+610	170	104.5	7.5
+650	230	103.2	6.8
+680	110	105.2	6.1
+710	60	105.7	4.8
+750	150	104.9	5.5
+720	250	102.9	5.1
+800	200	104	4.2
+830	80	105.5	3.1
+880	140	105	3.5
+920	210	103.8	2.9
+950	50	106	1.9
+980	160	104.7	2.2
+"""
+    with open(csv_name, 'w', encoding='utf-8') as f:
+        f.write(sample_data)
+    print(f"✅ File contoh '{csv_name}' berhasil dibuat.\n")
+
+# Baca data CSV
+try:
+    data = pd.read_csv(csv_name)
+    print("✅ File berhasil dibaca!\n")
+    print("Data awal:")
+    print(data.head())
+    print("\nInfo Data:")
+    print(data.info())
+except Exception as e:
+    print("❌ Gagal membaca file CSV!")
+    print(e)
+    sys.exit(1)
+
+# Hapus baris kosong jika ada
+data = data.dropna()
+
+# --- Bagian Grafik ---
+print("\n🔍 Membuat grafik sebaran data gravitasi...")
+
+try:
+    x = data["X"]
+    y = data["Y"]
+    a = data["Anomali_Gravitasi_mGal"]
+
+    plt.figure(figsize=(8, 6))
+    scatter = plt.scatter(x, y, c=a, cmap="viridis", s=90, edgecolor="k")
+    plt.colorbar(scatter, label="Anomali Gravitasi (mGal)")
+    plt.xlabel("Koordinat X (m)")
+    plt.ylabel("Koordinat Y (m)")
+    plt.title("Sebaran Titik Survey Gravitasi")
+    plt.grid(True, linestyle='--', alpha=0.5)
+
+    # Simpan dan tampilkan
+    plt.savefig("map_gravitasi.png", dpi=150)
+    print("✅ Grafik disimpan sebagai 'map_gravitasi.png'")
+    plt.show()
+
+except Exception as e:
+    print("❌ Terjadi kesalahan saat membuat grafik:")
+    print(e)
+    sys.exit(1)
+
+print("\nSelesai ✅")
