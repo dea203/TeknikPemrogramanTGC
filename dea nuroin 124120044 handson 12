@@ -1,0 +1,76 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+st.title("Dashboard Analisis Anomali Gravitasi")
+
+st.write("""
+Aplikasi ini digunakan untuk menganalisis data survei gravitasi 2D 
+dengan koordinat **X**, **Y**, dan nilai **Gravity_Anomaly**.
+""")
+
+
+uploaded_file = st.file_uploader("Upload file gravity_anomaly.csv", type=["csv"])
+
+
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+else:
+    st.info("Belum ada file diupload. Menggunakan data contoh lokal.")
+    df = pd.DataFrame({
+        "X":[10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200],
+        "Y":[50,55,48,52,50,49,53,51,49,50,55,48,52,50,49,53,51,49,50,52],
+        "Gravity_Anomaly":[1.2,1.5,1.8,2.5,3.0,2.8,2.1,1.5,1.1,0.8,1.3,1.9,2.7,3.5,4.0,3.8,3.1,2.5,1.8,1.2]
+    })
+
+
+st.subheader("Data Mentah")
+st.dataframe(df)
+
+
+st.sidebar.header("Filter Rentang Nilai X")
+
+xmin = float(df["X"].min())
+xmax = float(df["X"].max())
+
+x_min_slider = st.sidebar.slider("X-min", xmin, xmax, xmin)
+x_max_slider = st.sidebar.slider("X-max", xmin, xmax, xmax)
+
+
+filtered_df = df[(df["X"] >= x_min_slider) & (df["X"] <= x_max_slider)]
+
+st.subheader("Data setelah difilter")
+st.dataframe(filtered_df)
+
+
+st.subheader("Scatterplot Anomali Gravitasi")
+
+fig, ax = plt.subplots(figsize=(7,5))
+scatter = ax.scatter(
+    filtered_df["X"],
+    filtered_df["Y"],
+    c=filtered_df["Gravity_Anomaly"],
+    cmap="viridis"
+)
+
+plt.colorbar(scatter, label="Gravity Anomaly")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_title("Visualisasi Data Gravitasi")
+
+st.pyplot(fig)
+
+
+
+st.subheader("Soal Analisis (Wajib Diisi)")
+
+st.markdown(
+    """
+    **Pertanyaan:**  
+    Jelaskan secara singkat (2–3 kalimat) bagaimana penggunaan slider filter `X` (langkah 3)  
+    membantu Anda *menganalisis* lokasi dan tren potensi anomali tinggi/rendah pada scatterplot (langkah 4)?
+    """
+)
+
+analisis_mahasiswa = st.text_area("Ketik jawaban analisis Anda di sini...")
